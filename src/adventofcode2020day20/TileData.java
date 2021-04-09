@@ -24,6 +24,10 @@ public class TileData {
         isMatching = false; //set matching to false, leave rest blank
     }
     
+    public TileData(int tileID, int tileEdge){
+        
+    }
+    
     public boolean hasMatch(){
         return this.isMatching;
     }

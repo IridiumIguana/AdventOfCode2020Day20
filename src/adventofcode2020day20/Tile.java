@@ -85,6 +85,10 @@ public class Tile {
         tileMatches = new TileData[4];
     }
     
+    public char[] getEdge(int dir){
+        return this.edgeChars[dir];
+    }
+    
     /**
      * Checks if the Tile's specified edge matches with any edge of the checkTile, and returns TileData based on the answer
      * 
@@ -93,6 +97,7 @@ public class Tile {
      * @return  TileData containing data about if the tile has matches
      */
     public TileData checkMatchingEdge(int edgeDir, Tile checkTile){
-        
+        boolean noMatch = true; //start no match as true, set to false if match found
+        for
     }
 }
