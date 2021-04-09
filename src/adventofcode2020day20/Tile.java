@@ -5,6 +5,8 @@
  */
 package adventofcode2020day20;
 import java.lang.Integer;
+import java.util.List;
+import java.util.ArrayList;
 
 /**
  *
@@ -18,6 +20,12 @@ public class Tile {
     final int S = 2;
     final int W = 3;
     
+    //setup tile transformation values (tile doesn't actually rotate/flip until end, all checks based on these values
+    private int rotation; //the current rotation of the tile (values 0-3, wrapping)
+    private boolean xMirror; //holds if the tile has been mirrored in the x-axis
+    private boolean yMirror; //holds if the tile has been mirrored in the y-axis
+    
+    //setup tile types
     private boolean isCorner; //true if tile is a corner tile
     private boolean isEdge; //true if tile is an edge tile
     private boolean isCore; //true if tile is neither a corner nor an edge tile
@@ -29,6 +37,8 @@ public class Tile {
     private char[][] edgeChars; //2D Char array holding the edge chars of the tile in its current orientation
     
     private String tileText; //string containing entire base text of tile
+    
+    private TileData[] tileMatches; //2D TileData array containing data on any matching tiles
     
     /**
      * Constructor for Tiles from a formatted Tile String
@@ -70,6 +80,19 @@ public class Tile {
             edgeTmp = edgeTmp + tileChars[row][0]; //append WEST value to string
         }
         edgeChars[W] = edgeTmp.toCharArray(); //convert value to char array and save
+        
+        //setup TileData store for future use
+        tileMatches = new TileData[4];
+    }
+    
+    /**
+     * Checks if the Tile's specified edge matches with any edge of the checkTile, and returns TileData based on the answer
+     * 
+     * @param edgeDir  the direction (0-3) of the edge on the main tile to check for matches to
+     * @param checkTile  the Tile to check for matches against
+     * @return  TileData containing data about if the tile has matches
+     */
+    public TileData checkMatchingEdge(int edgeDir, Tile checkTile){
         
     }
 }
