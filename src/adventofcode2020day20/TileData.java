@@ -24,8 +24,12 @@ public class TileData {
         isMatching = false; //set matching to false, leave rest blank
     }
     
-    public TileData(int tileID, int tileEdge){
+    public TileData(int tileID, int tileEdge, boolean isMirror){
+        isMatching = true; //set matching to true (must be true if an ID is given)
         
+        matchID = tileID; //store tileID as matchID
+        matchEdge = tileEdge; //store edge direction
+        this.isMirror = isMirror; //store if mirrored
     }
     
     public boolean hasMatch(){

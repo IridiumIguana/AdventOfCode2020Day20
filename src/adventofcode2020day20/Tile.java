@@ -89,6 +89,10 @@ public class Tile {
         return this.edgeChars[dir];
     }
     
+    public int getID(){
+        return this.tileID;
+    }
+    
     /**
      * Checks if the Tile's specified edge matches with any edge of the checkTile, and returns TileData based on the answer
      * 
@@ -98,6 +102,58 @@ public class Tile {
      */
     public TileData checkMatchingEdge(int edgeDir, Tile checkTile){
         boolean noMatch = true; //start no match as true, set to false if match found
-        for
+        
+        char[] edge = this.getEdge(edgeDir); //get the edge to check
+        String edgeStr = new String(edge); //create string represenation of edge
+        String mirrorEdgeStr = reverseString(edgeStr); //create reversed version of edge
+        
+        boolean mirrorSW = false; //set to true if SW checks should be mirrored
+        
+        if((edgeDir == 0) || (edgeDir == 1)){ //if main edge is N or E, mirror when checking S & W (due to storage system, SW will be flipped when the tile is rotated, but not in storage)
+            mirrorSW = true;
+        }
+        else{ //(if 2 or 3) if main edge is S or W, mirror when checking N & E (due to storage system, NE will be flipped when the tile is rotated, but not in storage)
+            mirrorSW = false;
+        }
+        
+        //check against each edge of checkTile
+        for(int dir = 0; dir <= 3; dir++){
+            char[] checkEdge = checkTile.getEdge(dir); //get checkEdge
+            String checkEdgeStr = new String(checkEdge); //get checkEdge string
+            
+            //if SW should be mirrored and checking S or W
+            //or if NE should be mirrored and checking N or E
+            if((mirrorSW && ((dir == 2) || (dir == 3))) ||
+               (!mirrorSW && ((dir == 0) || (dir == 1)))){
+                
+                if(mirrorEdgeStr.equals(checkEdgeStr)){ //check for mirrored match
+                    return new TileData(checkTile.getID(), dir, false); //mir false due to the fact that edge should be mirrored by default
+                }
+                else if(edgeStr.equals(checkEdgeStr)){ //check for normal match
+                    return new TileData(checkTile.getID(), dir, true); //mir true due to the fact that edge should be mirrored by default
+                }
+            }
+            else{ //if using unmirrored values
+                if(mirrorEdgeStr.equals(checkEdgeStr)){ //check for mirrored match
+                    return new TileData(checkTile.getID(), dir, true);
+                }
+                else if(edgeStr.equals(checkEdgeStr)){ //check for normal match
+                    return new TileData(checkTile.getID(), dir, false);
+                }
+            }
+        }
+        
+        return new TileData(); //return false TileData if no matches found
+    }
+    
+    public static String reverseString(String str){
+        String reverse = "";
+        
+        while(str.length() > 0){ //loop while str still has chars to remove
+            reverse = reverse + str.substring(str.length() - 1); //add last char to reverse
+            str = str.substring(0,str.length() - 1); //remove last char
+        }
+        
+        return reverse; //return reversed string
     }
 }
