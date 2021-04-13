@@ -101,7 +101,6 @@ public class Tile {
      * @return  TileData containing data about if the tile has matches
      */
     public TileData checkMatchingEdge(int edgeDir, Tile checkTile){
-        boolean noMatch = true; //start no match as true, set to false if match found
         
         char[] edge = this.getEdge(edgeDir); //get the edge to check
         String edgeStr = new String(edge); //create string represenation of edge
@@ -143,7 +142,7 @@ public class Tile {
             }
         }
         
-        return new TileData(); //return false TileData if no matches found
+        return new TileData(); //return false (default) TileData if no matches found
     }
     
     public static String reverseString(String str){
