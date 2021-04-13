@@ -83,10 +83,17 @@ public class Tile {
         
         //setup TileData store for future use
         tileMatches = new TileData[4];
+        for(int i = 0; i < tileMatches.length; i++){
+            tileMatches[i] = new TileData(); //make sure each tile starts with false matching TileData
+        }
     }
     
     public char[] getEdge(int dir){
         return this.edgeChars[dir];
+    }
+    
+    public boolean isMatchFound(int dir){
+        return this.tileMatches[dir].hasMatch(); 
     }
     
     public int getID(){
@@ -117,6 +124,12 @@ public class Tile {
         
         //check against each edge of checkTile
         for(int dir = 0; dir <= 3; dir++){
+            
+            //if a match has already been found, don't bother checking dir
+            if(checkTile.isMatchFound(dir)){
+                continue;
+            }
+            
             char[] checkEdge = checkTile.getEdge(dir); //get checkEdge
             String checkEdgeStr = new String(checkEdge); //get checkEdge string
             
@@ -143,6 +156,16 @@ public class Tile {
         }
         
         return new TileData(); //return false (default) TileData if no matches found
+    }
+    
+    public void checkMatchingEdges(Tile checkTile){
+        //check each direction
+        for(int dir = 0; dir <= 3; dir++){
+            if(this.isMatchFound(dir)){ //don't check dir if already checked
+                continue;
+            }
+            TileData data = this.checkMatchingEdge(dir , checkTile);
+        }
     }
     
     public static String reverseString(String str){

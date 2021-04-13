@@ -33,6 +33,9 @@ public class TileBoard {
             tiles.set(i, new Tile(tileStrings[i])); //fill tiles with...tiles
         }
         
-        
+        //check each tile for matches
+        for(int i = 0; i < tiles.size(); i++){
+            
+        }
     }
 }
