@@ -39,6 +39,7 @@ public class Tile {
     private String tileText; //string containing entire base text of tile
     
     private TileData[] tileMatches; //2D TileData array containing data on any matching tiles
+    private int matchCount = 0; //holds number of matching tiles
     
     /**
      * Constructor for Tiles from a formatted Tile String
@@ -139,18 +140,18 @@ public class Tile {
                (!mirrorSW && ((dir == 0) || (dir == 1)))){
                 
                 if(mirrorEdgeStr.equals(checkEdgeStr)){ //check for mirrored match
-                    return new TileData(checkTile.getID(), dir, false); //mir false due to the fact that edge should be mirrored by default
+                    return new TileData(checkTile, this, edgeDir, dir, false); //mir false due to the fact that edge should be mirrored by default
                 }
                 else if(edgeStr.equals(checkEdgeStr)){ //check for normal match
-                    return new TileData(checkTile.getID(), dir, true); //mir true due to the fact that edge should be mirrored by default
+                    return new TileData(checkTile, this, edgeDir, dir, true); //mir true due to the fact that edge should be mirrored by default
                 }
             }
             else{ //if using unmirrored values
                 if(mirrorEdgeStr.equals(checkEdgeStr)){ //check for mirrored match
-                    return new TileData(checkTile.getID(), dir, true);
+                    return new TileData(checkTile, this, edgeDir, dir, true);
                 }
                 else if(edgeStr.equals(checkEdgeStr)){ //check for normal match
-                    return new TileData(checkTile.getID(), dir, false);
+                    return new TileData(checkTile, this, edgeDir, dir, false);
                 }
             }
         }
@@ -164,8 +165,34 @@ public class Tile {
             if(this.isMatchFound(dir)){ //don't check dir if already checked
                 continue;
             }
-            TileData data = this.checkMatchingEdge(dir , checkTile);
+            TileData data = this.checkMatchingEdge(dir, checkTile);
+            
+            if(data.hasMatch()){ //if a match was found, save match data to both tiles
+                this.addTileData(dir, data); //add base match data
+                this.incMatchCount(); //increment match count
+                
+                //create inverted match data
+                TileData invData = new TileData(data);
+                
+                //get inv match dir
+                int matchDir = data.getMatchEdgeDir();
+                
+                //save inv data to checkTile
+                checkTile.addTileData(matchDir, invData);
+                checkTile.incMatchCount(); //increment match count
+                
+                //if a match is found, stop checking (break)
+                break;
+            }
         }
+    }
+    
+    public void addTileData(int dir, TileData data){
+        this.tileMatches[dir] = data;
+    }
+    
+    public void incMatchCount(){
+        this.matchCount = matchCount++;
     }
     
     public static String reverseString(String str){

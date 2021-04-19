@@ -34,8 +34,14 @@ public class TileBoard {
         }
         
         //check each tile for matches
-        for(int i = 0; i < tiles.size(); i++){
-            
+        for(int i = 0; i < tiles.size(); i++){ //base tile
+            Tile baseTile = tiles.get(i); //get base tile
+            for(int j = i + 1; j < tiles.size(); j++){ //check tile
+                Tile checkTile = tiles.get(j); //get check tile
+                
+                //check for matches
+                baseTile.checkMatchingEdges(checkTile);
+            }
         }
     }
 }
