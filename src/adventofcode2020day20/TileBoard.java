@@ -76,5 +76,9 @@ public class TileBoard {
         //get first corner
         Tile corner = cornerTiles.get(0);
         
+        //align to fit in Top Left corner
+        while(!(corner.isMatchFound(0)) && !(corner.isMatchFound(3))){ //rotate so no matches are found in 0 and 3
+            
+        }
     }
 }

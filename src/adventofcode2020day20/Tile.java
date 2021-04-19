@@ -242,4 +242,6 @@ public class Tile {
     public boolean getCore(){
         return isCore;
     }
+    
+    
 }
