@@ -39,7 +39,7 @@ public class Tile {
     private String tileText; //string containing entire base text of tile
     
     private TileData[] tileMatches; //2D TileData array containing data on any matching tiles
-    private int matchCount = 0; //holds number of matching tiles
+    private int matchCount; //holds number of matching tiles
     
     /**
      * Constructor for Tiles from a formatted Tile String
@@ -87,6 +87,8 @@ public class Tile {
         for(int i = 0; i < tileMatches.length; i++){
             tileMatches[i] = new TileData(); //make sure each tile starts with false matching TileData
         }
+        
+        matchCount = 0;
     }
     
     public char[] getEdge(int dir){
@@ -109,7 +111,6 @@ public class Tile {
      * @return  TileData containing data about if the tile has matches
      */
     public TileData checkMatchingEdge(int edgeDir, Tile checkTile){
-        
         char[] edge = this.getEdge(edgeDir); //get the edge to check
         String edgeStr = new String(edge); //create string represenation of edge
         String mirrorEdgeStr = reverseString(edgeStr); //create reversed version of edge
@@ -125,7 +126,6 @@ public class Tile {
         
         //check against each edge of checkTile
         for(int dir = 0; dir <= 3; dir++){
-            
             //if a match has already been found, don't bother checking dir
             if(checkTile.isMatchFound(dir)){
                 continue;
@@ -192,7 +192,11 @@ public class Tile {
     }
     
     public void incMatchCount(){
-        this.matchCount = matchCount++;
+        matchCount = matchCount + 1;
+    }
+    
+    public int getMatchCount(){
+        return matchCount;
     }
     
     public static String reverseString(String str){
@@ -204,5 +208,38 @@ public class Tile {
         }
         
         return reverse; //return reversed string
+    }
+    
+    public void setTileType(int numMatches){
+        
+        //set each value to false to begin
+        isCorner = false;
+        isEdge = false;
+        isCore = false;
+        
+        switch(numMatches){
+            case 2: //if corner
+                isCorner = true;
+                break;
+            case 3: //if edge
+                isEdge = true;
+                break;
+            case 4: //if core
+                isCore = true;
+                break;
+        }
+        
+    }
+    
+    public boolean getCorner(){
+        return isCorner;
+    }
+    
+    public boolean getEdge(){
+        return isEdge;
+    }
+    
+    public boolean getCore(){
+        return isCore;
     }
 }
