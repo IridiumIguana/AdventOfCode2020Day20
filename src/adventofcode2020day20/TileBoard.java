@@ -51,10 +51,9 @@ public class TileBoard {
         
         for(int i = 0; i < tiles.size(); i++){ //loop through and save each tile into its correct location
             Tile t = tiles.get(i); //get tile
-            int matches = t.getMatchCount(); //get matchCount
             
-            //set tile type based on matchCount
-            t.setTileType(matches);
+            //set tile type based on matchCount and edge direction based on edges
+            t.setTileType();
             
             if(t.getCorner()){ //if corner, add to corners
                 cornerTiles.add(t);
@@ -74,11 +73,23 @@ public class TileBoard {
     
     public void sort(){
         //get first corner
-        Tile corner = cornerTiles.get(0);
+        Tile baseTile = cornerTiles.get(0);
         
         //align to fit in Top Left corner
-        while(!(corner.isMatchFound(0)) && !(corner.isMatchFound(3))){ //rotate so no matches are found in 0 and 3
-            
+        while(baseTile.addRotation(baseTile.getEdgeFaceDir()) != 0){ //rotate so no matches are found in 0 and 3
+            baseTile.rotateCW(); //rotate clockwise until in correct position
         }
+        
+        //add to TL
+        board[0][0] = baseTile;
+        
+        //get matching edge data for right of tile
+        int dir = 1; //set direction to check in to 1
+        TileData data = baseTile.getEdgeTileData(baseTile.removeRotation(dir)); //get data
+        Tile nextTile = data.getMatchTile(); //get tile match from data
+        int matchDir = data.getMatchEdgeDir(); //get direction of matching edge from data
+        boolean mirror = data.getMirror(); //get if mirrored
+        
+        if(dir == )
     }
 }

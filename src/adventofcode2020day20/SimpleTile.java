@@ -4,34 +4,18 @@
  * and open the template in the editor.
  */
 package adventofcode2020day20;
-import java.lang.Integer;
-import java.util.List;
-import java.util.ArrayList;
 
 /**
  *
  * @author s138616
  */
-public class Tile {
-    
+public class SimpleTile {
     //setup direction constants
     final int N = 0;
     final int E = 1;
     final int S = 2;
     final int W = 3;
-    
-    //setup tile transformation values (tile doesn't actually rotate/flip until end, all checks based on these values
-    private int rotation; //the current rotation of the tile (values 0-3, wrapping)
-    private boolean xMirror; //holds if the tile has been mirrored in the x-axis
-    private boolean yMirror; //holds if the tile has been mirrored in the y-axis
-    
-    //setup tile types
-    private boolean isCorner; //true if tile is a corner tile
-    private boolean isEdge; //true if tile is an edge tile
-    private boolean isCore; //true if tile is neither a corner nor an edge tile
-    
-    private int edgeFaceDir; //holds current direction of the edge face of an edge tile, or the clockwise-most edge of a corner tile
-    
+
     private int tileID; //holds the ID number of the tile
     
     private char[][] tileChars; //2D Char array holding the chars of the tile in its current orientation
@@ -40,8 +24,7 @@ public class Tile {
     
     private String tileText; //string containing entire base text of tile
     
-    private TileData[] tileMatches; //2D TileData array containing data on any matching tiles
-    private int matchCount; //holds number of matching tiles
+    private boolean[] matchFound; //holds if matches have been found
     
     /**
      * Constructor for Tiles from a formatted Tile String
@@ -83,26 +66,18 @@ public class Tile {
             edgeTmp = edgeTmp + tileChars[row][0]; //append WEST value to string
         }
         edgeChars[W] = edgeTmp.toCharArray(); //convert value to char array and save
-        
-        //setup TileData store for future use
-        tileMatches = new TileData[4];
-        for(int i = 0; i < tileMatches.length; i++){
-            tileMatches[i] = new TileData(); //make sure each tile starts with false matching TileData
-        }
-        
-        matchCount = 0;
     }
     
     public char[] getEdge(int dir){
         return this.edgeChars[dir];
     }
     
-    public boolean isMatchFound(int dir){
-        return this.tileMatches[dir].hasMatch(); 
-    }
-    
     public int getID(){
         return this.tileID;
+    }
+    
+    public boolean isMatchFound(int dir){
+        return matchFound[dir];
     }
     
     /**
@@ -189,17 +164,17 @@ public class Tile {
         }
     }
     
-    public void addTileData(int dir, TileData data){
-        this.tileMatches[dir] = data;
-    }
+//    public void addTileData(int dir, TileData data){
+//        this.tileMatches[dir] = data;
+//    }
     
-    public void incMatchCount(){
-        matchCount = matchCount + 1;
-    }
-    
-    public int getMatchCount(){
-        return matchCount;
-    }
+//    public void incMatchCount(){
+//        matchCount = matchCount + 1;
+//    }
+//    
+//    public int getMatchCount(){
+//        return matchCount;
+//    }
     
     public static String reverseString(String str){
         String reverse = "";
@@ -212,100 +187,100 @@ public class Tile {
         return reverse; //return reversed string
     }
     
-    public void setTileType(){
-        int numMatches = this.getMatchCount(); //get number of matches
-        
-        //set each value to false to begin
-        isCorner = false;
-        isEdge = false;
-        isCore = false;
-        
-        switch(numMatches){
-            case 2: //if corner
-                isCorner = true;
-                if(!this.isMatchFound(0)){ //check if 0 is edge
-                    if(!this.isMatchFound(1)){ //check if 1 is edge
-                        edgeFaceDir = 1;
-                    }
-                    else{ //3 must be edge
-                        edgeFaceDir = 0;
-                    }
-                }
-                else{ //2 must be edge
-                    if(!this.isMatchFound(1)){ //check if 1 is edge
-                        edgeFaceDir = 2;
-                    }
-                    else{ //3 must be edge
-                        edgeFaceDir = 3;
-                    }
-                }
-                break;
-            case 3: //if edge
-                isEdge = true;
-                for(int dir = 0; dir < 4; dir++){ //check all directions
-                    if(!this.isMatchFound(dir)){
-                        edgeFaceDir = dir; //if edge is found, save dir and break
-                        break;
-                    }
-                }
-                break;
-            case 4: //if core
-                isCore = true;
-                edgeFaceDir = -1; //set edge dir to -1 (no edges)
-                break;
-        }
-        
-    }
-    
-    //changes rotation to account for tile rotations and mirrors
-    public int addRotation(int dir){
-        dir += rotation;
-        dir = dir % 4; //mod 4
-        return dir;
-    }
-    
-    public int removeRotation(int dir){
-        dir -= rotation;
-        if(dir < 0){ //if removing rotation puts out of bounds, add 4
-            dir += 4;
-        }
-        dir = dir % 4; //mod 4
-        return dir;
-    }
-    
-    public void rotateCCW(){
-        rotation = (rotation + 3) % 4;
-    }
-    
-    public void rotateCW(){
-        rotation = (rotation + 1) % 4;
-    }
-    
-    public TileData getEdgeTileData(int dir){
-        return tileMatches[dir];
-    }
-    
-    public int getEdgeFaceDir(){
-        return edgeFaceDir;
-    }
-    
-    public boolean getCorner(){
-        return isCorner;
-    }
-    
-    public boolean getEdge(){
-        return isEdge;
-    }
-    
-    public boolean getCore(){
-        return isCore;
-    }
-    
-    public boolean isXMirror(){
-        return xMirror;
-    }
-    
-    public boolean isYMirror(){
-        return yMirror;
-    }
+//    public void setTileType(){
+//        int numMatches = this.getMatchCount(); //get number of matches
+//        
+//        //set each value to false to begin
+//        isCorner = false;
+//        isEdge = false;
+//        isCore = false;
+//        
+//        switch(numMatches){
+//            case 2: //if corner
+//                isCorner = true;
+//                if(!this.isMatchFound(0)){ //check if 0 is edge
+//                    if(!this.isMatchFound(1)){ //check if 1 is edge
+//                        edgeFaceDir = 1;
+//                    }
+//                    else{ //3 must be edge
+//                        edgeFaceDir = 0;
+//                    }
+//                }
+//                else{ //2 must be edge
+//                    if(!this.isMatchFound(1)){ //check if 1 is edge
+//                        edgeFaceDir = 2;
+//                    }
+//                    else{ //3 must be edge
+//                        edgeFaceDir = 3;
+//                    }
+//                }
+//                break;
+//            case 3: //if edge
+//                isEdge = true;
+//                for(int dir = 0; dir < 4; dir++){ //check all directions
+//                    if(!this.isMatchFound(dir)){
+//                        edgeFaceDir = dir; //if edge is found, save dir and break
+//                        break;
+//                    }
+//                }
+//                break;
+//            case 4: //if core
+//                isCore = true;
+//                edgeFaceDir = -1; //set edge dir to -1 (no edges)
+//                break;
+//        }
+//        
+//    }
+//    
+//    //changes rotation to account for tile rotations and mirrors
+//    public int addRotation(int dir){
+//        dir += rotation;
+//        dir = dir % 4; //mod 4
+//        return dir;
+//    }
+//    
+//    public int removeRotation(int dir){
+//        dir -= rotation;
+//        if(dir < 0){ //if removing rotation puts out of bounds, add 4
+//            dir += 4;
+//        }
+//        dir = dir % 4; //mod 4
+//        return dir;
+//    }
+//    
+//    public void rotateCCW(){
+//        rotation = (rotation + 3) % 4;
+//    }
+//    
+//    public void rotateCW(){
+//        rotation = (rotation + 1) % 4;
+//    }
+//    
+//    public TileData getEdgeTileData(int dir){
+//        return tileMatches[dir];
+//    }
+//    
+//    public int getEdgeFaceDir(){
+//        return edgeFaceDir;
+//    }
+//    
+//    public boolean getCorner(){
+//        return isCorner;
+//    }
+//    
+//    public boolean getEdge(){
+//        return isEdge;
+//    }
+//    
+//    public boolean getCore(){
+//        return isCore;
+//    }
+//    
+//    public boolean isXMirror(){
+//        return xMirror;
+//    }
+//    
+//    public boolean isYMirror(){
+//        return yMirror;
+//    }
 }
