@@ -41,14 +41,21 @@ public class SimpleBoard {
     
     public void getMatchingTiles(SimpleTile tile, int x, int y){
         for(int dir = 0; dir < 4; dir++){ //loop through each direction
-            if()
-        }
-        for(SimpleTile checkTile : tiles){ //check each tile
-            if(checkTile.isGrounded()){ //if grounded, skip checking and move on
+            if(tile.isMatchFound(dir)){ //if a match is already found in a direction, skip checking and move on
                 continue;
             }
             
+            if()
             
+            for(SimpleTile checkTile : tiles){ //check each tile
+                if(checkTile.isGrounded()){ //if grounded, skip checking and move on
+                    continue;
+                }
+                
+                if(tile.checkMatchingEdge(dir, checkTile)){ //if a match is found, stop checking and continue
+                    
+                }
+            }
         }
     }
 }

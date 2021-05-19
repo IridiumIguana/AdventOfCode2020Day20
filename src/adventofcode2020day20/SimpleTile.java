@@ -84,7 +84,7 @@ public class SimpleTile {
      * @param checkTile  the Tile to check for matches against
      * @return  boolean true if a match was found, false if not
      */
-    public boolean checkMatchingEdge(int edgeDir, Tile checkTile){
+    public boolean checkMatchingEdge(int edgeDir, SimpleTile checkTile){
         char[] edge = this.getEdge(edgeDir); //get the edge to check
         String edgeStr = new String(edge); //create string represenation of edge
         
