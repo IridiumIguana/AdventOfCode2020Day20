@@ -26,12 +26,14 @@ public class SimpleTile {
     
     private boolean[] matchFound; //holds if matches have been found
     
+    private boolean grounded; //holds if the tile is fixed in place
+    
     /**
-     * Constructor for Tiles from a formatted Tile String
+     * Constructor for SimpleTiles from a formatted Tile String
      * 
-     * @param tileStr  the Tile String to create a Tile based off of
+     * @param tileStr  the SimpleTile String to create a SimpleTile based off of
      */
-    public Tile(String tileStr){
+    public SimpleTile(String tileStr){
         tileText = tileStr; //save base string
         
         String[] tileLines = tileStr.split("\n"); //split string into lines
@@ -50,6 +52,171 @@ public class SimpleTile {
         
         //get edgeChars
         edgeChars = new char[4][]; //create empty array to fill with char edges
+        this.recalculateEdges(); //recalculate edges
+        
+        this.grounded = false; //start as ungrounded (movable)
+    }
+    
+    public char[] getEdge(int dir){
+        return this.edgeChars[dir];
+    }
+    
+    public int getID(){
+        return this.tileID;
+    }
+    
+    public boolean isMatchFound(int dir){
+        return matchFound[dir];
+    }
+    
+    public boolean isGrounded(){
+        return this.grounded;
+    }
+    
+    public void setGrounded(boolean groundValue){
+        this.grounded = groundValue;
+    }
+    
+    /**
+     * Checks if the Tile's specified edge matches with the corresponding edge of the CheckTile (the edge that would face it)
+     * 
+     * @param edgeDir  the direction (0-3) of the edge on the main tile to check for matches to
+     * @param checkTile  the Tile to check for matches against
+     * @return  boolean true if a match was found, false if not
+     */
+    public boolean checkMatchingEdge(int edgeDir, Tile checkTile){
+        char[] edge = this.getEdge(edgeDir); //get the edge to check
+        String edgeStr = new String(edge); //create string represenation of edge
+        
+        //get edge opposite of edgeDir to check
+        int dir = (edgeDir + 2) % 4;
+        
+        char[] checkEdge = checkTile.getEdge(dir); //get checkEdge
+        String checkEdgeStr = new String(checkEdge); //get checkEdge string
+        
+        if(edgeStr.equals(checkEdgeStr)){ //if both strings are equal, return true, else, return false
+            return true;
+        }
+        
+        return false;
+    }
+    
+    //"borrowed" from techiedelight
+    public void rotateCW(){
+        int len = tileChars.length;
+ 
+        // Transpose the matrix
+        for (int i = 0; i < len; i++)
+        {
+            for (int j = 0; j < i; j++)
+            {
+                char temp = tileChars[i][j];
+                tileChars[i][j] = tileChars[j][i];
+                tileChars[j][i] = temp;
+            }
+        }
+ 
+        // swap columns
+        for (int i = 0; i < len; i++)
+        {
+            for (int j = 0; j < len / 2; j++)
+            {
+                char temp = tileChars[i][j];
+                tileChars[i][j] = tileChars[i][len - j - 1];
+                tileChars[i][len - j - 1] = temp;
+            }
+        }
+        
+        boolean temp = this.matchFound[3];
+        this.matchFound[3] = this.matchFound[2];
+        this.matchFound[2] = this.matchFound[1];
+        this.matchFound[1] = this.matchFound[0];
+        this.matchFound[0] = temp;
+        
+        this.recalculateEdges(); //fix edges
+    }
+    
+    //"borrowed" from techiedelight
+    public void rotateCCW(){
+        int len = tileChars.length;
+ 
+        // Transpose the matrix
+        for (int i = 0; i < len; i++)
+        {
+            for (int j = 0; j < i; j++)
+            {
+                // swap `tileChars[i][j]` with `tileChars[j][i]`
+                char temp = tileChars[i][j];
+                tileChars[i][j] = tileChars[j][i];
+                tileChars[j][i] = temp;
+            }
+        }
+ 
+        // swap rows
+        for (int i = 0; i < len / 2; i++)
+        {
+            for (int j = 0; j < len; j++)
+            {
+                // swap `tileChars[i][j]` with `tileChars[len-i-1][j]`
+                char temp = tileChars[i][j];
+                tileChars[i][j] = tileChars[len-i-1][j];
+                tileChars[len-i-1][j] = temp;
+            }
+        }
+        
+        boolean temp = this.matchFound[0];
+        this.matchFound[0] = this.matchFound[1];
+        this.matchFound[1] = this.matchFound[2];
+        this.matchFound[2] = this.matchFound[3];
+        this.matchFound[3] = temp;
+        
+        this.recalculateEdges(); //fix edges
+    }
+    
+    public void flipOverX(){ //flips top with bottom
+        int len = tileChars.length;
+        
+        // swap rows
+        for (int i = 0; i < len / 2; i++)
+        {
+            for (int j = 0; j < len; j++)
+            {
+                // swap `tileChars[i][j]` with `tileChars[len-i-1][j]`
+                char temp = tileChars[i][j];
+                tileChars[i][j] = tileChars[len-i-1][j];
+                tileChars[len-i-1][j] = temp;
+            }
+        }
+        
+        boolean temp = this.matchFound[0];
+        this.matchFound[0] = this.matchFound[2];
+        this.matchFound[2] = temp;
+        
+        this.recalculateEdges(); //fix edges
+    }
+    
+    public void flipOverY(){ //flips left with right
+        int len = tileChars.length;
+        
+        // swap columns
+        for (int i = 0; i < len; i++)
+        {
+            for (int j = 0; j < len / 2; j++)
+            {
+                char temp = tileChars[i][j];
+                tileChars[i][j] = tileChars[i][len - j - 1];
+                tileChars[i][len - j - 1] = temp;
+            }
+        }
+        
+        boolean temp = this.matchFound[1];
+        this.matchFound[1] = this.matchFound[3];
+        this.matchFound[3] = temp;
+        
+        this.recalculateEdges(); //fix edges
+    }
+    
+    private void recalculateEdges(){
         //NORTH edge
         edgeChars[N] = tileChars[0]; //NORTH edge is just top of tileChars
         //SOUTH edge
@@ -68,114 +235,6 @@ public class SimpleTile {
         edgeChars[W] = edgeTmp.toCharArray(); //convert value to char array and save
     }
     
-    public char[] getEdge(int dir){
-        return this.edgeChars[dir];
-    }
-    
-    public int getID(){
-        return this.tileID;
-    }
-    
-    public boolean isMatchFound(int dir){
-        return matchFound[dir];
-    }
-    
-    /**
-     * Checks if the Tile's specified edge matches with any edge of the checkTile, and returns TileData based on the answer
-     * 
-     * @param edgeDir  the direction (0-3) of the edge on the main tile to check for matches to
-     * @param checkTile  the Tile to check for matches against
-     * @return  TileData containing data about if the tile has matches
-     */
-    public TileData checkMatchingEdge(int edgeDir, Tile checkTile){
-        char[] edge = this.getEdge(edgeDir); //get the edge to check
-        String edgeStr = new String(edge); //create string represenation of edge
-        String mirrorEdgeStr = reverseString(edgeStr); //create reversed version of edge
-        
-        boolean mirrorSW = false; //set to true if SW checks should be mirrored
-        
-        if((edgeDir == 0) || (edgeDir == 1)){ //if main edge is N or E, mirror when checking S & W (due to storage system, SW will be flipped when the tile is rotated, but not in storage)
-            mirrorSW = true;
-        }
-        else{ //(if 2 or 3) if main edge is S or W, mirror when checking N & E (due to storage system, NE will be flipped when the tile is rotated, but not in storage)
-            mirrorSW = false;
-        }
-        
-        //check against each edge of checkTile
-        for(int dir = 0; dir <= 3; dir++){
-            //if a match has already been found, don't bother checking dir
-            if(checkTile.isMatchFound(dir)){
-                continue;
-            }
-            
-            char[] checkEdge = checkTile.getEdge(dir); //get checkEdge
-            String checkEdgeStr = new String(checkEdge); //get checkEdge string
-            
-            //if SW should be mirrored and checking S or W
-            //or if NE should be mirrored and checking N or E
-            if((mirrorSW && ((dir == 2) || (dir == 3))) ||
-               (!mirrorSW && ((dir == 0) || (dir == 1)))){
-                
-                if(mirrorEdgeStr.equals(checkEdgeStr)){ //check for mirrored match
-                    return new TileData(checkTile, this, edgeDir, dir, false); //mir false due to the fact that edge should be mirrored by default
-                }
-                else if(edgeStr.equals(checkEdgeStr)){ //check for normal match
-                    return new TileData(checkTile, this, edgeDir, dir, true); //mir true due to the fact that edge should be mirrored by default
-                }
-            }
-            else{ //if using unmirrored values
-                if(mirrorEdgeStr.equals(checkEdgeStr)){ //check for mirrored match
-                    return new TileData(checkTile, this, edgeDir, dir, true);
-                }
-                else if(edgeStr.equals(checkEdgeStr)){ //check for normal match
-                    return new TileData(checkTile, this, edgeDir, dir, false);
-                }
-            }
-        }
-        
-        return new TileData(); //return false (default) TileData if no matches found
-    }
-    
-    public void checkMatchingEdges(Tile checkTile){
-        //check each direction
-        for(int dir = 0; dir <= 3; dir++){
-            if(this.isMatchFound(dir)){ //don't check dir if already checked
-                continue;
-            }
-            TileData data = this.checkMatchingEdge(dir, checkTile);
-            
-            if(data.hasMatch()){ //if a match was found, save match data to both tiles
-                this.addTileData(dir, data); //add base match data
-                this.incMatchCount(); //increment match count
-                
-                //create inverted match data
-                TileData invData = new TileData(data);
-                
-                //get inv match dir
-                int matchDir = data.getMatchEdgeDir();
-                
-                //save inv data to checkTile
-                checkTile.addTileData(matchDir, invData);
-                checkTile.incMatchCount(); //increment match count
-                
-                //if a match is found, stop checking (break)
-                break;
-            }
-        }
-    }
-    
-//    public void addTileData(int dir, TileData data){
-//        this.tileMatches[dir] = data;
-//    }
-    
-//    public void incMatchCount(){
-//        matchCount = matchCount + 1;
-//    }
-//    
-//    public int getMatchCount(){
-//        return matchCount;
-//    }
-    
     public static String reverseString(String str){
         String reverse = "";
         
@@ -186,101 +245,4 @@ public class SimpleTile {
         
         return reverse; //return reversed string
     }
-    
-//    public void setTileType(){
-//        int numMatches = this.getMatchCount(); //get number of matches
-//        
-//        //set each value to false to begin
-//        isCorner = false;
-//        isEdge = false;
-//        isCore = false;
-//        
-//        switch(numMatches){
-//            case 2: //if corner
-//                isCorner = true;
-//                if(!this.isMatchFound(0)){ //check if 0 is edge
-//                    if(!this.isMatchFound(1)){ //check if 1 is edge
-//                        edgeFaceDir = 1;
-//                    }
-//                    else{ //3 must be edge
-//                        edgeFaceDir = 0;
-//                    }
-//                }
-//                else{ //2 must be edge
-//                    if(!this.isMatchFound(1)){ //check if 1 is edge
-//                        edgeFaceDir = 2;
-//                    }
-//                    else{ //3 must be edge
-//                        edgeFaceDir = 3;
-//                    }
-//                }
-//                break;
-//            case 3: //if edge
-//                isEdge = true;
-//                for(int dir = 0; dir < 4; dir++){ //check all directions
-//                    if(!this.isMatchFound(dir)){
-//                        edgeFaceDir = dir; //if edge is found, save dir and break
-//                        break;
-//                    }
-//                }
-//                break;
-//            case 4: //if core
-//                isCore = true;
-//                edgeFaceDir = -1; //set edge dir to -1 (no edges)
-//                break;
-//        }
-//        
-//    }
-//    
-//    //changes rotation to account for tile rotations and mirrors
-//    public int addRotation(int dir){
-//        dir += rotation;
-//        dir = dir % 4; //mod 4
-//        return dir;
-//    }
-//    
-//    public int removeRotation(int dir){
-//        dir -= rotation;
-//        if(dir < 0){ //if removing rotation puts out of bounds, add 4
-//            dir += 4;
-//        }
-//        dir = dir % 4; //mod 4
-//        return dir;
-//    }
-//    
-//    public void rotateCCW(){
-//        rotation = (rotation + 3) % 4;
-//    }
-//    
-//    public void rotateCW(){
-//        rotation = (rotation + 1) % 4;
-//    }
-//    
-//    public TileData getEdgeTileData(int dir){
-//        return tileMatches[dir];
-//    }
-//    
-//    public int getEdgeFaceDir(){
-//        return edgeFaceDir;
-//    }
-//    
-//    public boolean getCorner(){
-//        return isCorner;
-//    }
-//    
-//    public boolean getEdge(){
-//        return isEdge;
-//    }
-//    
-//    public boolean getCore(){
-//        return isCore;
-//    }
-//    
-//    public boolean isXMirror(){
-//        return xMirror;
-//    }
-//    
-//    public boolean isYMirror(){
-//        return yMirror;
-//    }
 }
